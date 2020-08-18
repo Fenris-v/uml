@@ -1,0 +1,73 @@
+@startuml
+
+interface DatabaseDriver {
++ connect()
++ query($request)
++ disconnect()
+}
+
+abstract class Route {
+- $path
+- $callback
++ __construct($path, $callback)
++ match($uri)
++ run(Application $app)
+# getPath()
+- prepareCallback($callback)
+- getMethod() {abstract}
+}
+
+class GetRoute{
+# getMethod()
+}
+
+class PostRoute{
+# getMethod()
+}
+
+GetRoute --|> Route
+PostRoute --|> Route
+
+class Database {
+- $driver
++ __construct(DatabaseDriver $driver)
++ query($sql)
+}
+
+class MysqlDriver {
++ connect()
++ query($request)
++ disconnect()
+}
+
+class ArrayDriver {
++ connect()
++ query($request)
++ disconnect()
+}
+
+MysqlDriver ..|> DatabaseDriver
+ArrayDriver ..|> DatabaseDriver
+
+class Router {
+- $routes = []: array
++ get($path, $callback)
++ post($path, $callback)
++ dispatch(Application $app)
+}
+
+class Application {
+- $router
+- $db
++ __construct(Router $router, Database $db)
++ run($this)
++ getDatabase()
+}
+
+Router <-- Route
+
+Application o-- Router
+Application o-- Database
+DatabaseDriver --o Database
+
+@enduml
